@@ -4,17 +4,40 @@ let scores = {
     bufon: 0, cuidador: 0, criador: 0, governante: 0 
 };
 
+let archetypeDescriptions = {
+    inocente: "O Inocente busca simplicidade e honestidade. Marcas como a Coca-Cola transmitem alegria e positividade.",
+    explorador: "O Explorador adora desafios e novidades. Marcas como a Jeep representam aventura e liberdade.",
+    sabio: "O Sábio valoriza conhecimento e verdade. Marcas como Google e TED buscam ensinar e informar.",
+    heroi: "O Herói supera desafios e inspira. Marcas como Nike mostram força e determinação.",
+    fora_da_lei: "O Fora da Lei desafia as regras. Marcas como Harley-Davidson são rebeldes e inovadoras.",
+    mago: "O Mago transforma e encanta. Marcas como Disney criam experiências mágicas.",
+    cara_comum: "O Cara Comum conecta-se com todos. Marcas como IKEA são acessíveis e confiáveis.",
+    amante: "O Amante valoriza beleza e emoção. Marcas como Chanel transmitem paixão e desejo.",
+    bufon: "O Bufão traz humor e diversão. Marcas como Oreo e M&Ms usam entretenimento para engajar.",
+    cuidador: "O Cuidador protege e ajuda. Marcas como Johnson & Johnson prezam pelo bem-estar.",
+    criador: "O Criador é inovador e artístico. Marcas como Lego incentivam a criatividade.",
+    governante: "O Governante busca controle e excelência. Marcas como Rolex e Mercedes-Benz transmitem status."
+};
+
 let questions = [
-    "Qual a maior prioridade da sua marca?",
-    "Qual a sensação que sua marca deseja transmitir?",
-    "Como a marca se posiciona no mercado?"
+    "O que melhor representa sua marca?",
+    "Que emoção sua marca transmite?",
+    "Como sua marca se posiciona no mercado?"
 ];
 
 let options = [
-    ["<i class='fas fa-shield-alt'></i> Segurança e estabilidade", "<i class='fas fa-hiking'></i> Liberdade e aventura", "<i class='fas fa-book'></i> Conhecimento e aprendizado", "<i class='fas fa-fist-raised'></i> Força e coragem", "<i class='fas fa-bolt'></i> Revolução e mudança", "<i class='fas fa-magic'></i> Mistério e transformação", "<i class='fas fa-hand-holding-heart'></i> Empatia e conexão", "<i class='fas fa-heart'></i> Paixão e desejo", "<i class='fas fa-smile'></i> Alegria e humor", "<i class='fas fa-handshake'></i> Cuidado e proteção", "<i class='fas fa-paint-brush'></i> Criatividade e inovação", "<i class='fas fa-crown'></i> Autoridade e liderança"]
+    ["🕊️ Transparência e Pureza", "🌍 Exploração e Liberdade", "📚 Sabedoria e Aprendizado", "💪 Poder e Superação"],
+    ["😊 Alegria e Inspiração", "🔮 Magia e Transformação", "🎨 Criatividade e Originalidade", "🔥 Desafio e Revolução"],
+    ["❤️ Proteção e Empatia", "👑 Exclusividade e Prestígio", "🤝 Autoconfiança e Pertencimento", "🎭 Humor e Entretenimento"]
 ];
 
-let archetypes = Object.keys(scores);
+let archetypesMapping = [
+    ["inocente", "cara_comum", "cuidador"],
+    ["explorador", "fora_da_lei", "heroi"],
+    ["sabio", "criador", "mago"],
+    ["heroi", "governante", "fora_da_lei"]
+];
+
 let currentQuestion = 0;
 
 function loadQuestion() {
@@ -22,11 +45,12 @@ function loadQuestion() {
         document.querySelector('.question').textContent = questions[currentQuestion];
         let optionsContainer = document.querySelector('.options');
         optionsContainer.innerHTML = "";
+        document.querySelector('.progress').style.width = ((currentQuestion + 1) / questions.length) * 100 + "%";
         
-        for (let i = 0; i < archetypes.length; i++) {
+        for (let i = 0; i < options[currentQuestion].length; i++) {
             let button = document.createElement('button');
-            button.innerHTML = options[0][i];
-            button.onclick = function () { answer(archetypes[i]); };
+            button.textContent = options[currentQuestion][i];
+            button.onclick = function () { answer(archetypesMapping[i]); };
             optionsContainer.appendChild(button);
         }
     } else {
@@ -34,31 +58,18 @@ function loadQuestion() {
     }
 }
 
-function answer(arquetipo) {
-    scores[arquetipo]++;
+function answer(arquetipos) {
+    arquetipos.forEach(a => scores[a]++);
     currentQuestion++;
     loadQuestion();
 }
 
 function showResult() {
     document.getElementById('quiz').style.display = 'none';
-    document.getElementById('result').style.display = 'block';
     let topArchetype = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-    let descriptions = {
-        inocente: "Seu arquétipo é o Inocente! Sua marca preza pela honestidade e simplicidade.",
-        explorador: "Seu arquétipo é o Explorador! Sua marca busca inovação e aventura.",
-        sabio: "Seu arquétipo é o Sábio! Sua marca valoriza conhecimento e aprendizado.",
-        heroi: "Seu arquétipo é o Herói! Sua marca inspira força e superação.",
-        fora_da_lei: "Seu arquétipo é o Fora da Lei! Sua marca quebra padrões e desafia normas.",
-        mago: "Seu arquétipo é o Mago! Sua marca busca transformação e mistério.",
-        cara_comum: "Seu arquétipo é o Cara Comum! Sua marca promove conexão e pertencimento.",
-        amante: "Seu arquétipo é o Amante! Sua marca desperta emoções e desejo.",
-        bufon: "Seu arquétipo é o Bufão! Sua marca diverte e traz humor ao mundo.",
-        cuidador: "Seu arquétipo é o Cuidador! Sua marca protege e cuida das pessoas.",
-        criador: "Seu arquétipo é o Criador! Sua marca inova e traz criatividade.",
-        governante: "Seu arquétipo é o Governante! Sua marca transmite liderança e autoridade."
-    };
-    document.getElementById('result').textContent = descriptions[topArchetype];
+    document.getElementById('result').textContent = `Seu arquétipo é ${topArchetype.toUpperCase()}!`;
+    document.getElementById('explanation').textContent = archetypeDescriptions[topArchetype];
+    document.getElementById('explanation').style.display = 'block';
 }
 
 loadQuestion();
